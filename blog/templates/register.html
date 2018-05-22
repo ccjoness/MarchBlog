@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+
+    <link rel="stylesheet" href="">
+</head>
+<body>
+<form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label for="username">Username: </label>
+    <br>
+    <input type="text" id="username" name="username">
+    <br>
+
+
+    <label for="password">Password: </label>
+    <br>
+    <input type="password" id="password" name="password">
+    <br>
+
+
+    <label for="confpassword">Confirm Password</label>
+    <br>
+    <input type="password" id="confpassword" name="confpassword">
+    <br>
+
+
+    <label for="email">Email: </label>
+    <br>
+    <input type="text" id="email" name="email">
+    <br>
+
+
+    <label for="phone">Phone: </label>
+    <br>
+    <input type="text" id="phone" name="phone">
+    <br>
+
+
+    <label for="image">Profile Image: </label>
+    <br>
+    <input type="file" id="image" name="image">
+    <br>
+
+
+    <label for="alt_text">Image Alt Text: </label>
+    <br>
+    <input type="text" id="alt_text" name="alt_text">
+    <br>
+
+    <label for="img_desc">Image Description: </label>
+    <br>
+    <textarea name="img_desc" id="img_desc" cols="30" rows="10"></textarea>
+
+    <br>
+    <label for="bio">Bio:</label>
+    <br>
+    <textarea name="bio" id="bio" cols="30" rows="10"></textarea>
+
+    <br>
+    <input type="submit">
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    let csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $('#username').keyup(function (event) {
+        $.ajax({
+            url: "{% url 'username_validator' %}",
+            type: 'POST',
+            data: {
+                username: $(this).val()
+            },
+            success: function (response) {
+                if (response.available === true) {
+                    $('#username').css('border-color', '#00ff00');
+                } else {
+                    $('#username').css('border-color', '#ff0000')
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>
